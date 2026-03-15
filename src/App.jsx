@@ -12,7 +12,11 @@ import Settings from './pages/Settings'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Bookmarks from './pages/Bookmarks'
+import Tools from './pages/Tools'
+import Repositories from './pages/Repositories'
 import ProtectedRoute from './components/ProtectedRoute'
+
 
 function App() {
   return (
@@ -25,6 +29,8 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/news" element={<News />} />
               <Route path="/trending" element={<Trending />} />
+              <Route path="/repositories" element={<Repositories />} />
+              <Route path="/tools" element={<Tools />} />
               <Route path="/ai-chat" element={<AIChat />} />
               <Route path="/search" element={<Search />} />
               <Route path="/about" element={<About />} />
@@ -42,6 +48,14 @@ function App() {
                 }
               />
               <Route
+                path="/bookmarks"
+                element={
+                  <ProtectedRoute>
+                    <Bookmarks />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/settings"
                 element={
                   <ProtectedRoute>
@@ -50,6 +64,7 @@ function App() {
                 }
               />
             </Routes>
+
           </div>
         </Router>
       </AuthProvider>

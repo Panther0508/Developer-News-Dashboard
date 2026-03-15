@@ -1,0 +1,31 @@
+services:
+  # Backend API Service
+  - name: devpulse-backend
+    type: web
+    region: oregon
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: ALLOWED_ORIGINS
+        value: "https://devpulse.onrender.com"
+      - key: HF_TOKEN
+        sync: false
+        description: "HuggingFace API token for AI features (optional)"
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true
+
+  # Frontend Static Site
+  - name: devpulse-frontend
+    type: web
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist -l $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: "18"
+      - key: VITE_API_BASE_URL
+        value: "https://devpulse-backend.onrender.com"
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true

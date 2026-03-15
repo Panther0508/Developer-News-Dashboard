@@ -1,18 +1,23 @@
-"""
-FastAPI Backend for DevPulse
-Premium Developer Intelligence Platform
-"""
-
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
-from typing import Optional, List
 import time
 import asyncio
 import logging
-from functools import lru_cache
-from dotenv import load_dotenv
 import os
+import random
+from datetime import datetime
+from typing import Optional, List
+from functools import lru_cache
+
+import uvicorn
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from pydantic import BaseModel, Field, field_validator
+
+from services.news_service import get_aggregated_news
+from services.github_service import fetch_github_trending
+from services.tools_service import get_curated_tools
+from services.ai_service import summarize_text, chat_with_ai
 
 # Configure logging
 logging.basicConfig(
@@ -21,15 +26,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
-
-from pydantic import BaseModel, Field, field_validator
-from services.news_service import get_aggregated_news
-from services.github_service import fetch_github_trending
-from services.tools_service import get_curated_tools
-from services.ai_service import summarize_text
-
 
 class SummaryRequest(BaseModel):
     """Request model for text summarization"""
@@ -44,19 +42,18 @@ class SummaryRequest(BaseModel):
             raise ValueError('Text must be at least 50 characters long')
         return v
 
-
 class ChatRequest(BaseModel):
     """Request model for AI chat"""
     message: str = Field(..., min_length=1, max_length=2000, description="User message")
     context: Optional[str] = Field("", max_length=5000, description="Additional context")
     conversation_history: Optional[List[dict]] = Field(default_factory=list, max_length=50)
 
-
 app = FastAPI(
     title="DevPulse API",
     description="Developer News Dashboard Backend",
     version="1.1.0"
 )
+
 
 # Configure CORS from environment variable with fallback
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
@@ -70,6 +67,9 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],
 )
+
+# Add GZip middleware for compression
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 logger.info(f"CORS enabled for origins: {origins}")
 
@@ -198,21 +198,19 @@ async def get_analytics():
     try:
         # In a real app, this would be computed from a DB
         # Fetching news to get some real-ish numbers
-        news = await get_aggregated_news("programming", 50)
+        news_data = await get_aggregated_news("programming", 50)
         repos = await fetch_github_trending(None, 10)
         
         # Simple logic for trending language and most mentioned tech
         languages = ["TypeScript", "Python", "Rust", "Go", "Javascript"]
         technologies = ["React", "AI", "LLM", "Docker", "Vercel"]
         
-        import random
-        
         result = {
             "widgets": [
                 {
                     "id": "total-articles",
                     "label": "Total Articles Today",
-                    "value": f"{len(news) + random.randint(10, 50)}",
+                    "value": f"{len(news_data) + random.randint(10, 50)}",
                     "trend": "+12%",
                     "icon": "news"
                 },
@@ -342,8 +340,6 @@ async def chat(request: ChatRequest):
     - **context**: Additional context (optional)
     - **conversation_history**: Previous messages (optional)
     """
-    from services.ai_service import chat_with_ai
-    
     try:
         response = await chat_with_ai(
             message=request.message,

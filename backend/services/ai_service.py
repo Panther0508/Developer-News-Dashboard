@@ -64,12 +64,15 @@ async def chat_with_ai(message: str, context: str = "", conversation_history: li
     and provide insights on current events in the tech world. 
     Always be concise and informative in your responses."""
 
-    # Construct messages for the chat model
-    messages = [{"role": "system", "content": system_prompt}]
+    # Construct messages for the chat model using proper format
+    messages = [
+        {"role": "system", "content": system_prompt}
+    ]
     
     # Add conversation history
     for msg in conversation_history[-5:]:  # Last 5 messages
-        messages.append(msg)
+        if isinstance(msg, dict):
+            messages.append(msg)
     
     # Add current context if provided
     if context:
@@ -79,8 +82,8 @@ async def chat_with_ai(message: str, context: str = "", conversation_history: li
     messages.append({"role": "user", "content": message})
 
     try:
-        # Use a chat model
-        chat_api_url = "https://router.huggingface.co/hf-inference/models/meta-llama/Llama-3.2-1B-Instruct"
+        # Use a valid chat model - mistralai/Mistral-7B-Instruct-v0.2
+        chat_api_url = "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2"
         headers = {"Authorization": f"Bearer {HF_TOKEN}"}
         payload = {
             "inputs": messages,
@@ -97,13 +100,19 @@ async def chat_with_ai(message: str, context: str = "", conversation_history: li
             if response.status_code == 200:
                 result = response.json()
                 if isinstance(result, list) and len(result) > 0:
-                    return result[0].get("generated_text", "I apologize, but I couldn't generate a response.")
+                    generated_text = result[0].get("generated_text", "")
+                    # Extract the assistant's response from the full conversation
+                    if isinstance(messages, list):
+                        for msg in reversed(result[0].get("generated_text", "").split("\n")):
+                            if msg.strip() and not msg.startswith("System:"):
+                                return msg.strip()
+                    return generated_text if generated_text else "I apologize, but I couldn't generate a response."
                 return "I apologize, but I couldn't generate a response."
             elif response.status_code == 503:
                 return "The AI model is currently warming up. Please try again in a few seconds."
             else:
                 logger.error(f"HF Chat API Error: {response.status_code} - {response.text}")
-                return f"Chat failed: {response.status_code}"
+                return f"Chat service temporarily unavailable. Please try again later."
 
     except Exception as e:
         logger.error(f"Error in chat_with_ai: {str(e)}")
