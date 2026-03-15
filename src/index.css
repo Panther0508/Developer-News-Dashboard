@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #000000;
+    --secondary: #0a0a0a;
+    --card: #111111;
+    --border: #1f1f1f;
+    --gold-primary: #D4AF37;
+    --gold-accent: #FFD700;
+    --text-primary: #EAEAEA;
+    --text-muted: #9CA3AF;
+  }
+
+  body {
+    @apply bg-background text-text-primary font-sans antialiased selection:bg-gold-primary selection:text-background;
+    margin: 0;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-md border border-border rounded-xl transition-all duration-300;
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+  }
+
+  .gold-glow:hover {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+    @apply border-gold-primary/50;
+  }
+
+  .btn-premium {
+    @apply relative px-6 py-2 bg-gold-gradient text-background font-bold rounded-lg 
+           transition-all duration-300 hover:scale-105 active:scale-95
+           hover:shadow-[0_0_20px_rgba(255,215,0,0.4)];
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 text-text-muted rounded-lg transition-all duration-200
+           hover:bg-white/5 hover:text-gold-primary;
+  }
+
+  .nav-link.active {
+    @apply bg-gold-primary/10 text-gold-primary border-r-2 border-gold-primary rounded-r-none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
