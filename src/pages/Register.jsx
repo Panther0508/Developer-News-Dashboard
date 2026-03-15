@@ -124,7 +124,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333333] rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="••••••••"
                 />
                 <button
@@ -167,7 +167,7 @@ const Register = () => {
             </div>
 
             <div className="flex items-start">
-              <input type="checkbox" required className="w-4 h-4 mt-1 rounded border-dark-300 bg-dark-100 text-gold focus:ring-gold" />
+              <input type="checkbox" required className="w-4 h-4 mt-1 rounded border-[#333333] bg-[#1a1a1a] text-gold focus:ring-gold" />
               <span className="ml-2 text-sm text-gray-400">
                 I agree to the{' '}
                 <a href="#" className="text-gold hover:underline">Terms of Service</a>

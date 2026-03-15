@@ -23,7 +23,7 @@
 
 @layer components {
   .card {
-    @apply bg-dark-50 border border-dark-300 rounded-xl transition-all duration-300;
+    @apply bg-[#111111] border border-[#333333] rounded-xl transition-all duration-300;
   }
 
   .glass {
@@ -43,7 +43,7 @@
   }
 
   .skeleton {
-    @apply bg-dark-200 animate-pulse;
+    @apply bg-[#262626] animate-pulse;
   }
 
   .gold-glow {
@@ -102,4 +102,23 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pull to refresh indicator */
+.pull-to-refresh {
+  @apply absolute top-0 left-0 right-0 h-16 flex items-center justify-center;
+}
+
+/* Infinite scroll loader */
+.infinite-scroll-loader {
+  @apply flex items-center justify-center py-8;
+}
+
+/* Chat bubble styles */
+.chat-bubble-user {
+  @apply bg-gold/20 text-text-primary rounded-2xl rounded-br-sm px-4 py-2 max-w-[80%];
+}
+
+.chat-bubble-ai {
+  @apply bg-card border border-border text-text-primary rounded-2xl rounded-bl-sm px-4 py-2 max-w-[80%];
 }

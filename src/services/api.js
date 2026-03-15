@@ -94,4 +94,19 @@ export const summarizeNews = async (text) => {
   }
 }
 
+// AI Chat API
+export const chatWithAI = async (message, context = '', conversationHistory = []) => {
+  try {
+    const response = await api.post('/api/chat', { 
+      message, 
+      context, 
+      conversation_history: conversationHistory 
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error chatting with AI:', error)
+    throw error
+  }
+}
+
 export default api

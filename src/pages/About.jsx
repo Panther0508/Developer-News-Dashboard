@@ -147,7 +147,7 @@ const About = () => {
               or build your own version.
             </p>
             <a
-              href="https://github.com"
+              href="https://github.com/Panther0508/Developer-News-Dashboard"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-gold inline-flex items-center px-6 py-3 rounded-lg font-medium"

@@ -27,9 +27,11 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/', label: 'Dashboard' },
+    { to: '/news', label: 'News' },
+    { to: '/trending', label: 'Trending' },
+    { to: '/ai-chat', label: 'AI Chat' },
     { to: '/search', label: 'Search' },
     { to: '/about', label: 'About' },
-    { to: '/contact', label: 'Contact' },
   ]
 
   return (
@@ -37,7 +39,7 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 glass border-b border-dark-300"
+      className="fixed top-0 left-0 right-0 z-50 glass border-b border-[#333333]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -74,7 +76,7 @@ const Navbar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search news, repos, tools..."
-                className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-10 pr-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
+                className="w-full bg-[#1a1a1a] border border-[#333333] rounded-lg pl-10 pr-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all"
               />
             </div>
           </form>
@@ -83,7 +85,7 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {/* GitHub Icon */}
             <a
-              href="https://github.com"
+              href="https://github.com/Panther0508/Developer-News-Dashboard"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-lg hover:bg-dark-100 transition-colors group"
@@ -110,9 +112,9 @@ const Navbar = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-48 bg-dark-100 border border-dark-300 rounded-lg shadow-xl overflow-hidden"
+                      className="absolute right-0 mt-2 w-48 bg-[#1a1a1a] border border-[#333333] rounded-lg shadow-xl overflow-hidden"
                     >
-                      <div className="p-3 border-b border-dark-300">
+                      <div className="p-3 border-b border-[#333333]">
                         <p className="text-sm font-medium text-white">{user?.name}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
@@ -134,7 +136,7 @@ const Navbar = () => {
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center space-x-2 px-3 py-2 text-sm text-red-400 hover:bg-dark-200 transition-colors w-full"
+                        className="flex items-center space-x-2 px-3 py-2 text-sm text-red-400 hover:bg-[#262626] transition-colors w-full"
                       >
                         <LogOut className="w-4 h-4" />
                         <span>Logout</span>
@@ -180,7 +182,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden py-4 border-t border-dark-300"
+            className="md:hidden py-4 border-t border-[#333333]"
           >
             <form onSubmit={handleSearch} className="mb-4">
               <div className="relative">
@@ -216,7 +218,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     to="/register"
-                    className="block px-3 py-2 text-sm text-gold hover:bg-dark-100 rounded-lg"
+                    className="block px-3 py-2 text-sm text-gold hover:bg-[#1a1a1a] rounded-lg"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Sign Up

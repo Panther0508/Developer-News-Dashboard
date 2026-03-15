@@ -24,6 +24,11 @@ class SummaryRequest(BaseModel):
     max_length: int = 150
     min_length: int = 40
 
+class ChatRequest(BaseModel):
+    message: str
+    context: str = ""
+    conversation_history: list = []
+
 app = FastAPI(title="DevPulse API", description="Developer News Dashboard Backend")
 
 # CORS middleware
@@ -191,6 +196,18 @@ async def summarize(request: SummaryRequest):
     
     summary = await summarize_text(request.text, request.max_length, request.min_length)
     return {"summary": summary}
+
+@app.post("/api/chat")
+async def chat(request: ChatRequest):
+    """AI Chat endpoint for answering questions about news"""
+    from services.ai_service import chat_with_ai
+    
+    response = await chat_with_ai(
+        message=request.message,
+        context=request.context,
+        conversation_history=request.conversation_history
+    )
+    return {"response": response}
 
 if __name__ == "__main__":
     import uvicorn

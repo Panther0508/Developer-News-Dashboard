@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Clock, User, Bookmark, Sparkles, Loader2 } from 'lucide-react';
+import { ExternalLink, Clock, User, Bookmark, Sparkles, Loader2, Eye, Share2, TrendingUp } from 'lucide-react';
 import { summarizeNews } from '../services/api';
 
-const NewsCard = ({ article, index = 0, layout = 'default' }) => {
+const NewsCard = ({ article, index = 0, layout = 'default', showMetrics = false, showTrendIndicator = false }) => {
   const [summary, setSummary] = useState(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
 
@@ -90,6 +90,12 @@ const NewsCard = ({ article, index = 0, layout = 'default' }) => {
 
           <h3 className={`font-bold text-text-primary group-hover:text-gold-accent transition-colors line-clamp-2 ${isWide ? 'text-lg' : 'text-base'}`}>
             {article.title}
+            {showTrendIndicator && article.rank <= 3 && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-gold/20 text-gold text-xs">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Hot
+              </span>
+            )}
           </h3>
           
           <AnimatePresence mode="wait">
@@ -126,6 +132,24 @@ const NewsCard = ({ article, index = 0, layout = 'default' }) => {
             <User className="w-3 h-3 mr-1" />
             <span className="truncate max-w-[120px]">{article.author}</span>
           </div>
+          {showMetrics && (
+            <div className="flex items-center gap-3 text-xs text-text-muted">
+              <div className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                {article.views?.toLocaleString() || '0'}
+              </div>
+              <div className="flex items-center gap-1">
+                <Share2 className="w-3 h-3" />
+                {article.shares?.toLocaleString() || '0'}
+              </div>
+              {article.trendScore > 50 && (
+                <div className="flex items-center gap-1 text-gold">
+                  <TrendingUp className="w-3 h-3" />
+                  Trending
+                </div>
+              )}
+            </div>
+          )}
           <ExternalLink className="w-4 h-4 text-text-muted group-hover:text-gold-primary transition-all transform group-hover:translate-x-1" />
         </div>
       </div>

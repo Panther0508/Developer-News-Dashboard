@@ -5,17 +5,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/devpulse/devpulse/stargazers">
-    <img src="https://img.shields.io/github/stars/devpulse/devpulse?style=flat&color=gold" alt="Stars" />
+  <a href="https://github.com/Panther0508/Developer-News-Dashboard/stargazers">
+    <img src="https://img.shields.io/github/stars/Panther0508/Developer-News-Dashboard?style=flat&color=gold" alt="Stars" />
   </a>
-  <a href="https://github.com/devpulse/devpulse/issues">
-    <img src="https://img.shields.io/github/issues/devpulse/devpulse?style=flat&color=gold" alt="Issues" />
+  <a href="https://github.com/Panther0508/Developer-News-Dashboard/issues">
+    <img src="https://img.shields.io/github/issues/Panther0508/Developer-News-Dashboard?style=flat&color=gold" alt="Issues" />
   </a>
-  <a href="https://github.com/devpulse/devpulse/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/devpulse/devpulse?style=flat&color=gold" alt="License" />
-  </a>
-  <a href="https://twitter.com/devpulse">
-    <img src="https://img.shields.io/twitter/follow/devpulse?style=flat&color=gold" alt="Twitter" />
+  <a href="https://github.com/Panther0508/Developer-News-Dashboard/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Panther0508/Developer-News-Dashboard?style=flat&color=gold" alt="License" />
   </a>
 </p>
 
@@ -134,8 +131,8 @@ Developer-News-Dashboard/
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/devpulse.git
-cd devpulse
+git clone https://github.com/Panther0508/Developer-News-Dashboard.git
+cd Developer-News-Dashboard
 ```
 
 ### Backend Setup
@@ -161,7 +158,7 @@ The backend will start at `http://localhost:8000`
 
 ```bash
 # Navigate to project root
-cd devpulse
+cd Developer-News-Dashboard
 
 # Install dependencies
 npm install
@@ -249,5 +246,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 </p>
 
 <p align="center">
-  <a href="https://devpulse.ai">devpulse.ai</a>
+  <a href="https://github.com/Panther0508/Developer-News-Dashboard">View on GitHub</a>
 </p>

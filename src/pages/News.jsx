@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Newspaper, Clock, Filter, Search } from 'lucide-react';
+import { Newspaper, Clock, Filter, Search, Sparkles } from 'lucide-react';
 import { fetchNews } from '../services/api';
 import NewsCard from '../components/NewsCard';
 import SkeletonLoader from '../components/SkeletonLoader';
