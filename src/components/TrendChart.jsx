@@ -36,7 +36,7 @@ const TrendChart = ({ data, type = 'bar', title = 'Tech Trends' }) => {
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
-                dataKey="count"
+                dataKey="value"
                 nameKey="name"
               >
                 {data.map((entry, index) => (
@@ -64,7 +64,7 @@ const TrendChart = ({ data, type = 'bar', title = 'Tech Trends' }) => {
                 width={80}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color || '#D4AF37'} />
                 ))}

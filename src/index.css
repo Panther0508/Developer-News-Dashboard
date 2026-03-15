@@ -22,8 +22,28 @@
 }
 
 @layer components {
+  .card {
+    @apply bg-black-50 border border-black-300 rounded-xl transition-all duration-300;
+  }
+
+  .glass {
+    @apply bg-black/60 backdrop-blur-xl;
+  }
+
   .glass-card {
     @apply bg-card/80 backdrop-blur-md border border-border rounded-xl transition-all duration-300;
+  }
+
+  .gradient-text {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+  }
+
+  .btn-gold {
+    @apply bg-gold-gradient text-black font-bold transition-all hover:shadow-[0_0_20px_rgba(212,175,55,0.3)];
+  }
+
+  .skeleton {
+    @apply bg-black-200 animate-pulse;
   }
 
   .gold-glow {
@@ -32,7 +52,13 @@
 
   .gold-glow:hover {
     box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
-    @apply border-gold-primary/50;
+    @apply border-gold/50;
+  }
+
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
+    background-size: 24px 24px;
   }
 
   .btn-premium {
@@ -43,11 +69,11 @@
 
   .nav-link {
     @apply flex items-center gap-3 px-4 py-3 text-text-muted rounded-lg transition-all duration-200
-           hover:bg-white/5 hover:text-gold-primary;
+           hover:bg-white/5 hover:text-gold;
   }
 
   .nav-link.active {
-    @apply bg-gold-primary/10 text-gold-primary border-r-2 border-gold-primary rounded-r-none;
+    @apply bg-gold/10 text-gold border-r-2 border-gold rounded-r-none;
   }
 }
 

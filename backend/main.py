@@ -138,6 +138,27 @@ async def get_analytics():
         ]
     }
 
+@app.get("/api/tech-trends")
+async def get_tech_trends():
+    """Endpoint for language and category trends"""
+    return {
+        "languages": [
+            {"name": "TypeScript", "value": 85},
+            {"name": "Python", "value": 78},
+            {"name": "Rust", "value": 65},
+            {"name": "Go", "value": 55},
+            {"name": "Javascript", "value": 80},
+            {"name": "C++", "value": 45}
+        ],
+        "categories": [
+            {"name": "Web Development", "value": 450},
+            {"name": "Artificial Intelligence", "value": 380},
+            {"name": "Cloud Computing", "value": 310},
+            {"name": "Cybersecurity", "value": 240},
+            {"name": "Data Science", "value": 290}
+        ]
+    }
+
 @app.get("/api/search")
 async def search(q: str = Query(..., description="Search query")):
     if not q:
@@ -146,7 +167,6 @@ async def search(q: str = Query(..., description="Search query")):
     # Generic search across aggregated news
     news = await get_aggregated_news(q, 30)
     
-    # Simple filtering for titles/descriptions containing query if not already handled by APIs
     results = [
         item for item in news 
         if q.lower() in item["title"].lower() or q.lower() in item.get("description", "").lower()

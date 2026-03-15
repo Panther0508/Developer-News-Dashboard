@@ -59,6 +59,17 @@ export const fetchAnalytics = async () => {
   }
 }
 
+// Tech Trends API
+export const fetchTechTrends = async () => {
+  try {
+    const response = await api.get('/api/tech-trends')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching tech trends:', error)
+    return { languages: [], categories: [] }
+  }
+}
+
 // Search API
 export const searchNews = async (query) => {
   try {
