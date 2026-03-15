@@ -93,7 +93,7 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                      className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                       placeholder="Your name"
                     />
                   </div>
@@ -105,7 +105,7 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                      className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -119,7 +119,7 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                    className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                     placeholder="What's this about?"
                   />
                 </div>
@@ -132,7 +132,7 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors resize-none"
+                    className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-gold transition-colors resize-none"
                     placeholder="Your message..."
                   />
                 </div>
@@ -201,7 +201,7 @@ const Contact = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-12 h-12 rounded-lg bg-black-100 border border-black-300 flex items-center justify-center text-gray-400 transition-colors ${social.color}`}
+                      className={`w-12 h-12 rounded-lg bg-dark-100 border border-dark-300 flex items-center justify-center text-gray-400 transition-colors ${social.color}`}
                     >
                       <social.icon className="w-6 h-6" />
                     </a>

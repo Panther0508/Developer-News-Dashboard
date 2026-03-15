@@ -66,7 +66,7 @@ const Profile = () => {
                 <div className="w-32 h-32 rounded-full bg-gold-gradient flex items-center justify-center text-4xl font-bold text-black">
                   {user.avatar}
                 </div>
-                <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-black-100 border border-black-300 flex items-center justify-center hover:bg-black-200 transition-colors">
+                <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-dark-100 border border-dark-300 flex items-center justify-center hover:bg-dark-200 transition-colors">
                   <Edit2 className="w-4 h-4 text-gold" />
                 </button>
               </div>
@@ -81,7 +81,7 @@ const Profile = () => {
                         type="text"
                         value={editedUser.name}
                         onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
-                        className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
+                        className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
                       />
                     </div>
                     <div>
@@ -90,7 +90,7 @@ const Profile = () => {
                         type="email"
                         value={editedUser.email}
                         onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
-                        className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
+                        className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
                       />
                     </div>
                     <div>
@@ -98,7 +98,7 @@ const Profile = () => {
                       <textarea
                         value={editedUser.bio}
                         onChange={(e) => setEditedUser({ ...editedUser, bio: e.target.value })}
-                        className="w-full bg-black-100 border border-black-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
+                        className="w-full bg-dark-100 border border-dark-300 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-gold"
                         rows={2}
                       />
                     </div>
@@ -112,7 +112,7 @@ const Profile = () => {
                       </button>
                       <button
                         onClick={handleCancel}
-                        className="flex items-center px-4 py-2 bg-black-100 text-gray-400 rounded-lg font-medium hover:bg-black-200 transition-colors"
+                        className="flex items-center px-4 py-2 bg-dark-100 text-gray-400 rounded-lg font-medium hover:bg-dark-200 transition-colors"
                       >
                         <X className="w-4 h-4 mr-2" />
                         Cancel
@@ -141,7 +141,7 @@ const Profile = () => {
                     </div>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="inline-flex items-center px-4 py-2 bg-black-100 border border-black-300 rounded-lg text-sm text-gray-300 hover:border-gold transition-colors"
+                      className="inline-flex items-center px-4 py-2 bg-dark-100 border border-dark-300 rounded-lg text-sm text-gray-300 hover:border-gold transition-colors"
                     >
                       <Edit2 className="w-4 h-4 mr-2" />
                       Edit Profile

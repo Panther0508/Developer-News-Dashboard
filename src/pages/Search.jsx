@@ -75,7 +75,7 @@ const Search = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for topics, technologies, frameworks..."
-                className="w-full bg-black-100 border border-black-300 rounded-xl pl-12 pr-12 py-4 text-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                className="w-full bg-dark-100 border border-dark-300 rounded-xl pl-12 pr-12 py-4 text-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
               />
               {searchQuery && (
                 <button
@@ -115,7 +115,7 @@ const Search = () => {
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-black-100 flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-dark-100 flex items-center justify-center">
                     <SearchIcon className="w-8 h-8 text-gray-600" />
                   </div>
                   <h3 className="text-xl font-medium text-gray-300 mb-2">
@@ -134,7 +134,7 @@ const Search = () => {
               transition={{ duration: 0.3 }}
               className="text-center py-16"
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-black-100 flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-dark-100 flex items-center justify-center">
                 <Zap className="w-10 h-10 text-gold" />
               </div>
               <h2 className="text-2xl font-display font-bold text-white mb-4">
@@ -153,7 +153,7 @@ const Search = () => {
                       setSearchQuery(tag);
                       setSearchParams({ q: tag });
                     }}
-                    className="px-4 py-2 bg-black-100 border border-black-300 rounded-lg text-sm text-gray-400 hover:text-gold hover:border-gold/30 transition-all"
+                    className="px-4 py-2 bg-dark-100 border border-dark-300 rounded-lg text-sm text-gray-400 hover:text-gold hover:border-gold/30 transition-all"
                   >
                     {tag}
                   </button>

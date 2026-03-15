@@ -74,7 +74,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -89,7 +89,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="••••••••"
                 />
                 <button
@@ -104,7 +104,7 @@ const Login = () => {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="w-4 h-4 rounded border-black-300 bg-black-100 text-gold focus:ring-gold" />
+                <input type="checkbox" className="w-4 h-4 rounded border-dark-300 bg-dark-100 text-gold focus:ring-gold" />
                 <span className="ml-2 text-sm text-gray-400">Remember me</span>
               </label>
               <a href="#" className="text-sm text-gold hover:underline">
@@ -137,7 +137,7 @@ const Login = () => {
         </div>
 
         {/* Demo credentials */}
-        <div className="mt-6 p-4 bg-black-100 border border-black-300 rounded-lg">
+        <div className="mt-6 p-4 bg-dark-100 border border-dark-300 rounded-lg">
           <p className="text-sm text-gray-400 text-center">
             Demo: Enter any email and password to sign in
           </p>

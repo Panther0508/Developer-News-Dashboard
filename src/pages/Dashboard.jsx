@@ -66,7 +66,7 @@ const Dashboard = () => {
         className="pt-24 pb-8 px-4 sm:px-6 lg:px-8"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-black-100 via-black-50 to-black p-8 md:p-12 border border-black-300">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-dark-100 via-dark-50 to-black p-8 md:p-12 border border-dark-300">
             <div className="absolute inset-0 bg-pattern" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
@@ -107,7 +107,7 @@ const Dashboard = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeCategory === cat.id
                     ? 'bg-gold text-black'
-                    : 'bg-black-100 text-gray-400 hover:text-gold hover:bg-black-200 border border-black-300'
+                    : 'bg-dark-100 text-gray-400 hover:text-gold hover:bg-dark-200 border border-dark-300'
                 }`}
               >
                 {cat.label}
@@ -239,7 +239,7 @@ const Dashboard = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-black-300 py-8">
+      <footer className="border-t border-dark-300 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">

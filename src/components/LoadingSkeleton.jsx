@@ -17,7 +17,7 @@ const LoadingSkeleton = ({ type = 'card', count = 3 }) => {
               <div className="skeleton h-5 w-12 rounded" />
               <div className="skeleton h-5 w-12 rounded" />
             </div>
-            <div className="pt-3 border-t border-black-200">
+            <div className="pt-3 border-t border-dark-200">
               <div className="skeleton h-4 w-1/3 rounded" />
             </div>
           </div>
@@ -38,7 +38,7 @@ const LoadingSkeleton = ({ type = 'card', count = 3 }) => {
               <div className="skeleton h-5 w-16 rounded" />
               <div className="skeleton h-5 w-16 rounded" />
             </div>
-            <div className="pt-3 border-t border-black-200">
+            <div className="pt-3 border-t border-dark-200">
               <div className="skeleton h-4 w-1/4 rounded" />
             </div>
           </div>

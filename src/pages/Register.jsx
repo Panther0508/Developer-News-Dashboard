@@ -94,7 +94,7 @@ const Register = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="John Doe"
                 />
               </div>
@@ -109,7 +109,7 @@ const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -124,7 +124,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-12 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="••••••••"
                 />
                 <button
@@ -160,14 +160,14 @@ const Register = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full bg-black-100 border border-black-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
+                  className="w-full bg-dark-100 border border-dark-300 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold transition-colors"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             <div className="flex items-start">
-              <input type="checkbox" required className="w-4 h-4 mt-1 rounded border-black-300 bg-black-100 text-gold focus:ring-gold" />
+              <input type="checkbox" required className="w-4 h-4 mt-1 rounded border-dark-300 bg-dark-100 text-gold focus:ring-gold" />
               <span className="ml-2 text-sm text-gray-400">
                 I agree to the{' '}
                 <a href="#" className="text-gold hover:underline">Terms of Service</a>

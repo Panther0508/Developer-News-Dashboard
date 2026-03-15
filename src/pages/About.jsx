@@ -125,7 +125,7 @@ const About = () => {
               {['React', 'FastAPI', 'TailwindCSS', 'Framer Motion', 'Recharts', 'Hacker News API', 'Dev.to API'].map((tech, index) => (
                 <span
                   key={index}
-                  className="px-4 py-2 bg-black-100 border border-black-300 rounded-lg text-sm text-gray-300"
+                  className="px-4 py-2 bg-dark-100 border border-dark-300 rounded-lg text-sm text-gray-300"
                 >
                   {tech}
                 </span>

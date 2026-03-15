@@ -118,7 +118,7 @@ const Settings = () => {
 
               <div className="space-y-4">
                 {section.settings.map((setting, index) => (
-                  <div key={index} className="flex items-center justify-between py-3 border-b border-black-200 last:border-0">
+                  <div key={index} className="flex items-center justify-between py-3 border-b border-dark-200 last:border-0">
                     <div>
                       <label className="text-gray-300 font-medium">{setting.label}</label>
                     </div>
@@ -127,7 +127,7 @@ const Settings = () => {
                       <button
                         onClick={() => handleChange(setting.key, !settings[setting.key])}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
-                          settings[setting.key] ? 'bg-gold' : 'bg-black-300'
+                          settings[setting.key] ? 'bg-gold' : 'bg-dark-300'
                         }`}
                       >
                         <span
@@ -140,7 +140,7 @@ const Settings = () => {
                       <select
                         value={settings[setting.key]}
                         onChange={(e) => handleChange(setting.key, e.target.value)}
-                        className="bg-black-100 border border-black-300 rounded-lg px-4 py-2 text-gray-300 focus:outline-none focus:border-gold"
+                        className="bg-dark-100 border border-dark-300 rounded-lg px-4 py-2 text-gray-300 focus:outline-none focus:border-gold"
                       >
                         {setting.options.map((option) => (
                           <option key={option} value={option}>
@@ -170,7 +170,7 @@ const Settings = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-black-200">
+              <div className="flex items-center justify-between py-3 border-b border-dark-200">
                 <div className="flex items-center">
                   <Key className="w-5 h-5 text-gray-400 mr-3" />
                   <div>

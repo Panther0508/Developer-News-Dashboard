@@ -5,7 +5,7 @@ const TrendChart = ({ data, type = 'bar', title = 'Tech Trends' }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-black-100 border border-black-300 rounded-lg p-3 shadow-xl">
+        <div className="bg-dark-100 border border-dark-300 rounded-lg p-3 shadow-xl">
           <p className="text-sm font-medium text-gray-200">{label}</p>
           <p className="text-sm text-gold">
             {payload[0].value.toLocaleString()} repos

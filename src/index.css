@@ -23,7 +23,7 @@
 
 @layer components {
   .card {
-    @apply bg-black-50 border border-black-300 rounded-xl transition-all duration-300;
+    @apply bg-dark-50 border border-dark-300 rounded-xl transition-all duration-300;
   }
 
   .glass {
@@ -43,7 +43,7 @@
   }
 
   .skeleton {
-    @apply bg-black-200 animate-pulse;
+    @apply bg-dark-200 animate-pulse;
   }
 
   .gold-glow {
