@@ -8,6 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import time
 import asyncio
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 from pydantic import BaseModel
 from services.news_service import get_aggregated_news
 from services.github_service import fetch_github_trending

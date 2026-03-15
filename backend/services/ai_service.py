@@ -3,7 +3,7 @@ import logging
 import os
 
 # Hugging Face Inference API details
-HF_API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+HF_API_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn"
 HF_TOKEN = os.environ.get("HF_TOKEN", "")  # Set via environment variable
 
 logger = logging.getLogger(__name__)
@@ -12,12 +12,12 @@ async def summarize_text(text: str, max_length: int = 150, min_length: int = 40)
     """
     Summarize long articles using Hugging Face Inference API
     """
-    if not text or len(text) < 100:
+    if not text or len(text) < 50:
         return text
     
     if not HF_TOKEN:
         logger.warning("HF_TOKEN not set. Summarization unavailable.")
-        return "AI summarization is not configured. Please set HF_TOKEN."
+        return "AI summarization is not configured. Please check your environment variables."
 
     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
     payload = {
