@@ -178,7 +178,12 @@ const Settings = () => {
                     <p className="text-sm text-gray-500">Update your account password</p>
                   </div>
                 </div>
-                <button className="text-gold text-sm hover:underline">Update</button>
+                <button 
+                  onClick={() => alert('Change Password feature is currently disabled in the demo.')}
+                  className="text-gold text-sm hover:underline"
+                >
+                  Update
+                </button>
               </div>
               
               <div className="flex items-center justify-between py-3">
@@ -189,7 +194,13 @@ const Settings = () => {
                     <p className="text-sm text-gray-500">Add an extra layer of security</p>
                   </div>
                 </div>
-                <button className="text-gold text-sm hover:underline">Enable</button>
+                <button 
+                  onClick={() => alert('2FA integration is coming soon!')}
+                  className="text-gold text-sm hover:underline"
+                >
+                  Enable
+                </button>
+
               </div>
             </div>
           </motion.div>

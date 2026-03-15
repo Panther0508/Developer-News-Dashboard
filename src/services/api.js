@@ -11,6 +11,65 @@ const api = axios.create({
   },
 })
 
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Add any auth tokens if needed
+    const token = localStorage.getItem('devpulse_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    console.error('Request error:', error)
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => {
+    return response
+  },
+  (error) => {
+    // Handle different error types
+    if (error.response) {
+      // Server responded with error status
+      const { status, data } = error.response
+      
+      switch (status) {
+        case 400:
+          console.error('Bad request:', data.detail)
+          break
+        case 401:
+          console.error('Unauthorized - please login')
+          // Could redirect to login here
+          break
+        case 403:
+          console.error('Forbidden - access denied')
+          break
+        case 404:
+          console.error('Resource not found')
+          break
+        case 500:
+          console.error('Server error')
+          break
+        default:
+          console.error('API error:', data.detail)
+      }
+    } else if (error.request) {
+      // Request made but no response received
+      console.error('Network error - no response received')
+    } else {
+      // Error setting up request
+      console.error('Request setup error:', error.message)
+    }
+    
+    return Promise.reject(error)
+  }
+)
+
 // News API
 export const fetchNews = async (category = 'programming', source = 'all') => {
   try {
@@ -105,6 +164,17 @@ export const chatWithAI = async (message, context = '', conversationHistory = []
     return response.data
   } catch (error) {
     console.error('Error chatting with AI:', error)
+    throw error
+  }
+}
+
+// Health check
+export const checkHealth = async () => {
+  try {
+    const response = await api.get('/api/health')
+    return response.data
+  } catch (error) {
+    console.error('Health check failed:', error)
     throw error
   }
 }

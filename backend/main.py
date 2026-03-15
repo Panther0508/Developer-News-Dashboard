@@ -6,55 +6,97 @@ Premium Developer Intelligence Platform
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
+from typing import Optional, List
 import time
 import asyncio
+import logging
+from functools import lru_cache
 from dotenv import load_dotenv
 import os
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Load environment variables from .env file
 load_dotenv()
-from pydantic import BaseModel
+
+from pydantic import BaseModel, Field, field_validator
 from services.news_service import get_aggregated_news
 from services.github_service import fetch_github_trending
 from services.tools_service import get_curated_tools
 from services.ai_service import summarize_text
 
+
 class SummaryRequest(BaseModel):
-    text: str
-    max_length: int = 150
-    min_length: int = 40
+    """Request model for text summarization"""
+    text: str = Field(..., min_length=50, description="Text to summarize")
+    max_length: int = Field(150, ge=10, le=500, description="Maximum summary length")
+    min_length: int = Field(40, ge=5, le=200, description="Minimum summary length")
+    
+    @field_validator('text')
+    @classmethod
+    def validate_text_length(cls, v: str) -> str:
+        if len(v) < 50:
+            raise ValueError('Text must be at least 50 characters long')
+        return v
+
 
 class ChatRequest(BaseModel):
-    message: str
-    context: str = ""
-    conversation_history: list = []
+    """Request model for AI chat"""
+    message: str = Field(..., min_length=1, max_length=2000, description="User message")
+    context: Optional[str] = Field("", max_length=5000, description="Additional context")
+    conversation_history: Optional[List[dict]] = Field(default_factory=list, max_length=50)
 
-app = FastAPI(title="DevPulse API", description="Developer News Dashboard Backend")
 
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title="DevPulse API",
+    description="Developer News Dashboard Backend",
+    version="1.1.0"
 )
 
-# Simple in-memory cache
+# Configure CORS from environment variable with fallback
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
+origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "Authorization"],
+)
+
+logger.info(f"CORS enabled for origins: {origins}")
+
+# Simple in-memory cache with TTL
 cache = {}
 CACHE_DURATION = 900  # 15 minutes in seconds
+
 
 def get_cached(key: str):
     """Get cached data if still valid"""
     if key in cache:
         data, timestamp = cache[key]
         if time.time() - timestamp < CACHE_DURATION:
+            logger.debug(f"Cache hit for key: {key}")
             return data
+        else:
+            # Remove expired entry
+            del cache[key]
+            logger.debug(f"Cache expired for key: {key}")
     return None
+
 
 def set_cache(key: str, data):
     """Set cached data with timestamp"""
     cache[key] = (data, time.time())
+    logger.debug(f"Cached data for key: {key}")
+
 
 # ============================================
 # API ENDPOINTS
@@ -68,90 +110,155 @@ async def root():
         "status": "online"
     }
 
+
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "cache_size": len(cache)
+    }
+
+
 @app.get("/api/news")
 async def get_news(
     category: str = Query("programming", description="News category"),
-    limit: int = Query(15, description="Limit results")
+    limit: int = Query(15, ge=1, le=50, description="Limit results")
 ):
+    """
+    Fetch aggregated news from multiple sources
+    
+    - **category**: News category (e.g., 'programming', 'AI', 'webdev')
+    - **limit**: Number of results to return (1-50)
+    """
     cache_key = f"news_{category}_{limit}"
     cached = get_cached(cache_key)
     if cached:
-        return {"news": cached}
+        return {"news": cached, "cached": True}
     
-    news = await get_aggregated_news(category, limit)
-    set_cache(cache_key, news)
-    return {"news": news}
+    try:
+        news = await get_aggregated_news(category, limit)
+        set_cache(cache_key, news)
+        logger.info(f"Fetched {len(news)} news items for category: {category}")
+        return {"news": news, "cached": False}
+    except Exception as e:
+        logger.error(f"Error fetching news: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch news")
+
 
 @app.get("/api/github-trending")
 async def get_trending(
-    language: str = Query(None, description="Language filter"),
-    limit: int = Query(15, description="Limit results")
+    language: Optional[str] = Query(None, description="Language filter"),
+    limit: int = Query(15, ge=1, le=50, description="Limit results")
 ):
+    """
+    Fetch trending GitHub repositories
+    
+    - **language**: Programming language filter (optional)
+    - **limit**: Number of results to return (1-50)
+    """
     cache_key = f"github_{language}_{limit}"
     cached = get_cached(cache_key)
     if cached:
-        return {"repositories": cached}
+        return {"repositories": cached, "cached": True}
     
-    repos = await fetch_github_trending(language, limit)
-    set_cache(cache_key, repos)
-    return {"repositories": repos}
+    try:
+        repos = await fetch_github_trending(language, limit)
+        set_cache(cache_key, repos)
+        logger.info(f"Fetched {len(repos)} trending repos for language: {language}")
+        return {"repositories": repos, "cached": False}
+    except Exception as e:
+        logger.error(f"Error fetching GitHub trending: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch GitHub trending")
+
 
 @app.get("/api/dev-tools")
 async def get_tools():
-    tools = get_curated_tools()
-    return {"tools": tools}
+    """Get curated list of developer tools"""
+    try:
+        tools = get_curated_tools()
+        return {"tools": tools}
+    except Exception as e:
+        logger.error(f"Error fetching dev tools: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch dev tools")
+
 
 @app.get("/api/analytics")
 async def get_analytics():
-    """Endpoint for Dashboard Analytics Widgets"""
-    # In a real app, this would be computed from a DB
-    # Fetching news to get some real-ish numbers
-    news = await get_aggregated_news("programming", 50)
-    repos = await fetch_github_trending(None, 10)
+    """
+    Endpoint for Dashboard Analytics Widgets
+    Results are cached to avoid excessive API calls
+    """
+    cache_key = "analytics_dashboard"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
     
-    # Simple logic for trending language and most mentioned tech
-    languages = ["TypeScript", "Python", "Rust", "Go", "Javascript"]
-    technologies = ["React", "AI", "LLM", "Docker", "Vercel"]
-    
-    import random
-    
-    return {
-        "widgets": [
-            {
-                "id": "total-articles",
-                "label": "Total Articles Today",
-                "value": f"{len(news) + random.randint(10, 50)}",
-                "trend": "+12%",
-                "icon": "news"
-            },
-            {
-                "id": "trending-lang",
-                "label": "Trending Language",
-                "value": random.choice(languages),
-                "trend": "Hot",
-                "icon": "code"
-            },
-            {
-                "id": "top-repo",
-                "label": "Top GitHub Repo",
-                "value": repos[0]["repo_name"] if repos else "loading...",
-                "trend": "Peak",
-                "icon": "github"
-            },
-            {
-                "id": "mentioned-tech",
-                "label": "Most Mentioned Tech",
-                "value": random.choice(technologies),
-                "trend": "Popular",
-                "icon": "sparkles"
-            }
-        ]
-    }
+    try:
+        # In a real app, this would be computed from a DB
+        # Fetching news to get some real-ish numbers
+        news = await get_aggregated_news("programming", 50)
+        repos = await fetch_github_trending(None, 10)
+        
+        # Simple logic for trending language and most mentioned tech
+        languages = ["TypeScript", "Python", "Rust", "Go", "Javascript"]
+        technologies = ["React", "AI", "LLM", "Docker", "Vercel"]
+        
+        import random
+        
+        result = {
+            "widgets": [
+                {
+                    "id": "total-articles",
+                    "label": "Total Articles Today",
+                    "value": f"{len(news) + random.randint(10, 50)}",
+                    "trend": "+12%",
+                    "icon": "news"
+                },
+                {
+                    "id": "trending-lang",
+                    "label": "Trending Language",
+                    "value": random.choice(languages),
+                    "trend": "Hot",
+                    "icon": "code"
+                },
+                {
+                    "id": "top-repo",
+                    "label": "Top GitHub Repo",
+                    "value": repos[0]["repo_name"] if repos else "loading...",
+                    "trend": "Peak",
+                    "icon": "github"
+                },
+                {
+                    "id": "mentioned-tech",
+                    "label": "Most Mentioned Tech",
+                    "value": random.choice(technologies),
+                    "trend": "Popular",
+                    "icon": "sparkles"
+                }
+            ]
+        }
+        
+        # Cache for shorter duration (5 minutes)
+        cache[cache_key] = (result, time.time())
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error fetching analytics: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch analytics")
+
 
 @app.get("/api/tech-trends")
 async def get_tech_trends():
     """Endpoint for language and category trends"""
-    return {
+    # Cache this endpoint longer (30 minutes)
+    cache_key = "tech_trends"
+    cached = get_cached(cache_key)
+    if cached:
+        return cached
+    
+    result = {
         "languages": [
             {"name": "TypeScript", "value": 85},
             {"name": "Python", "value": 78},
@@ -168,46 +275,105 @@ async def get_tech_trends():
             {"name": "Data Science", "value": 290}
         ]
     }
+    
+    # Cache for 30 minutes
+    cache[cache_key] = (result, time.time() + 1800)
+    return result
+
 
 @app.get("/api/search")
-async def search(q: str = Query(..., description="Search query")):
-    if not q:
-        raise HTTPException(status_code=400, detail="Query required")
+async def search(q: str = Query(..., min_length=1, max_length=200, description="Search query")):
+    """
+    Search across news sources
     
-    # Generic search across aggregated news
-    news = await get_aggregated_news(q, 30)
+    - **q**: Search query (required, 1-200 characters)
+    """
+    if not q or not q.strip():
+        raise HTTPException(status_code=400, detail="Query is required")
     
-    results = [
-        item for item in news 
-        if q.lower() in item["title"].lower() or q.lower() in item.get("description", "").lower()
-    ]
+    # Limit search term length
+    q = q.strip()[:200]
     
-    return {
-        "results": results,
-        "count": len(results),
-        "query": q
-    }
+    try:
+        # Generic search across aggregated news
+        news = await get_aggregated_news(q, 30)
+        
+        results = [
+            item for item in news 
+            if q.lower() in item.get("title", "").lower() or 
+               q.lower() in item.get("description", "").lower()
+        ]
+        
+        logger.info(f"Search for '{q}' returned {len(results)} results")
+        
+        return {
+            "results": results,
+            "count": len(results),
+            "query": q
+        }
+    except Exception as e:
+        logger.error(f"Error searching news: {str(e)}")
+        raise HTTPException(status_code=500, detail="Search failed")
+
 
 @app.post("/api/summarize")
 async def summarize(request: SummaryRequest):
-    """Summarize text using Hugging Face AI"""
-    if not request.text or len(request.text) < 50:
-        return {"summary": request.text}
+    """
+    Summarize text using Hugging Face AI
     
-    summary = await summarize_text(request.text, request.max_length, request.min_length)
-    return {"summary": summary}
+    - **text**: Text to summarize (minimum 50 characters)
+    - **max_length**: Maximum summary length (10-500)
+    - **min_length**: Minimum summary length (5-200)
+    """
+    try:
+        summary = await summarize_text(request.text, request.max_length, request.min_length)
+        return {"summary": summary}
+    except Exception as e:
+        logger.error(f"Error in summarize: {str(e)}")
+        raise HTTPException(status_code=500, detail="Summarization failed")
+
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest):
-    """AI Chat endpoint for answering questions about news"""
+    """
+    AI Chat endpoint for answering questions about news
+    
+    - **message**: User message (required)
+    - **context**: Additional context (optional)
+    - **conversation_history**: Previous messages (optional)
+    """
     from services.ai_service import chat_with_ai
     
-    response = await chat_with_ai(
-        message=request.message,
-        context=request.context,
-        conversation_history=request.conversation_history
-    )
-    return {"response": response}
+    try:
+        response = await chat_with_ai(
+            message=request.message,
+            context=request.context,
+            conversation_history=request.conversation_history or []
+        )
+        return {"response": response}
+    except Exception as e:
+        logger.error(f"Error in chat: {str(e)}")
+        raise HTTPException(status_code=500, detail="Chat failed")
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    """Handle HTTP exceptions"""
+    return {
+        "detail": exc.detail,
+        "status_code": exc.status_code
+    }
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request, exc):
+    """Handle general exceptions"""
+    logger.error(f"Unhandled exception: {str(exc)}")
+    return {
+        "detail": "Internal server error",
+        "status_code": 500
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

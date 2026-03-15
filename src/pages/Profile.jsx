@@ -66,9 +66,13 @@ const Profile = () => {
                 <div className="w-32 h-32 rounded-full bg-gold-gradient flex items-center justify-center text-4xl font-bold text-black">
                   {user.avatar}
                 </div>
-                <button className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-dark-100 border border-dark-300 flex items-center justify-center hover:bg-dark-200 transition-colors">
+                <button 
+                  onClick={() => alert('Avatar upload feature is coming soon!')}
+                  className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-dark-100 border border-dark-300 flex items-center justify-center hover:bg-dark-200 transition-colors"
+                >
                   <Edit2 className="w-4 h-4 text-gold" />
                 </button>
+
               </div>
 
               {/* User Info */}

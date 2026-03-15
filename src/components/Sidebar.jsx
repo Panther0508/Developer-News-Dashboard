@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -19,13 +19,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     const loadProfile = () => {
       const saved = localStorage.getItem('devpulse_profile');
       if (saved) {
-        setUserName(JSON.parse(saved).displayName);
+        try {
+          setUserName(JSON.parse(saved).displayName || 'DevUser');
+        } catch (e) {
+          console.error('Error parsing profile', e);
+        }
       }
     };
     loadProfile();
     window.addEventListener('profileUpdate', loadProfile);
     return () => window.removeEventListener('profileUpdate', loadProfile);
   }, []);
+
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -75,9 +80,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           <div className="p-4 rounded-xl bg-white/5 border border-white/10">
             <p className="text-xs text-text-muted mb-2 uppercase tracking-widest font-bold">{userName}</p>
             <p className="text-sm text-text-primary mb-3">Upgrade for advanced AI insights</p>
-            <button className="w-full py-2 bg-gold-primary/20 text-gold-primary border border-gold-primary/30 rounded-lg text-xs font-bold hover:bg-gold-primary hover:text-background transition-all">
+            <button 
+              onClick={() => alert('This feature is coming soon! Stay tuned for DevPulse Pro.')}
+              className="w-full py-2 bg-gold-primary/20 text-gold-primary border border-gold-primary/30 rounded-lg text-xs font-bold hover:bg-gold-primary hover:text-background transition-all"
+            >
               Upgrade Now
             </button>
+
           </div>
         </div>
       )}
