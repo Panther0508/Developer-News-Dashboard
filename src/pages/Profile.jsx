@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Calendar, Edit2, Save, X, Bookmarks, History, Settings } from 'lucide-react';
+import { User, Mail, Calendar, Edit2, Save, X, Bookmark, History, Settings } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
 const Profile = () => {
@@ -176,7 +176,7 @@ const Profile = () => {
           >
             <a href="/bookmarks" className="card p-6 flex items-center space-x-4 hover:border-gold transition-colors">
               <div className="w-12 h-12 rounded-lg bg-gold/10 flex items-center justify-center">
-                <Bookmarks className="w-6 h-6 text-gold" />
+                <Bookmark className="w-6 h-6 text-gold" />
               </div>
               <div>
                 <h3 className="font-semibold text-white">Bookmarks</h3>

@@ -39,7 +39,7 @@
   }
 
   .btn-gold {
-    @apply bg-gold-gradient text-black font-bold transition-all hover:shadow-[0_0_20px_rgba(212,175,55,0.3)];
+    @apply bg-gold-gradient text-black font-bold transition-all shadow-gold-glow hover:shadow-gold-glow-hover;
   }
 
   .skeleton {
@@ -47,12 +47,11 @@
   }
 
   .gold-glow {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    @apply shadow-gold-glow;
   }
-
+  
   .gold-glow:hover {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
-    @apply border-gold/50;
+    @apply shadow-gold-glow-hover border-gold/50;
   }
 
   .bg-pattern {
@@ -64,7 +63,7 @@
   .btn-premium {
     @apply relative px-6 py-2 bg-gold-gradient text-background font-bold rounded-lg 
            transition-all duration-300 hover:scale-105 active:scale-95
-           hover:shadow-[0_0_20px_rgba(255,215,0,0.4)];
+           shadow-gold-glow hover:shadow-gold-glow-hover;
   }
 
   .nav-link {
