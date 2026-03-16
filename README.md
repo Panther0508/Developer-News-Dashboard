@@ -239,22 +239,22 @@ TailwindCSS is configured with custom colors in `tailwind.config.js`:
 
 ### Main Dashboard
 
-![Dashboard](Screenshot 2026-03-15 094521.png)
+![Dashboard](docs/Screenshot%202026-03-15%20094521.png)
 The main dashboard displays aggregated news from Hacker News and Dev.to with a sleek dark theme and gold accents. News cards show title, source, author, date, and reaction count.
 
 ### AI News Assistant
 
-![AI Chat](Screenshot 2026-03-15 094644.png)
+![AI Chat](docs/Screenshot%202026-03-15%20094644.png)
 The AI News Assistant provides intelligent assistance with features like summarizing articles, analyzing topics, comparing articles, and generating personalized briefings. Quick actions include Summarize Article, Analyze Topic, Compare Articles, Explain Topic, Daily Briefing, and What's Trending.
 
 ### Tech Trends
 
-![Tech Trends](Screenshot 2026-03-15 094717.png)
+![Tech Trends](docs/Screenshot%202026-03-15%20094717.png)
 Visual representation of popular programming languages using interactive charts. Shows trends for Python, JavaScript, Go, Rust, TypeScript, and other popular languages over time.
 
 ### GitHub Trending & Tools
 
-![GitHub Trending](Screenshot 2026-03-15 094740.png)
+![GitHub Trending](docs/Screenshot%202026-03-15%20094740.png)
 Browse latest trending repositories from GitHub with detailed information including stars, forks, language, description, and topics. Also shows curated developer tools.
 
 ---

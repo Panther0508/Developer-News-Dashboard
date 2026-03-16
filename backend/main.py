@@ -9,9 +9,12 @@ from functools import lru_cache
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from pydantic import BaseModel, Field, field_validator
 
 from services.news_service import get_aggregated_news
@@ -25,6 +28,59 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+class DynamicCORSMiddleware(BaseHTTPMiddleware):
+    """Custom CORS middleware that handles wildcard domains for preview deployments"""
+    
+    def __init__(self, app, allowed_origins: list):
+        super().__init__(app)
+        self.allowed_origins = allowed_origins
+        self.wildcard_origins = [o for o in allowed_origins if o.startswith(".")]
+        self.exact_origins = [o for o in allowed_origins if not o.startswith(".")]
+    
+    def is_origin_allowed(self, origin: str) -> bool:
+        """Check if origin is allowed, including wildcard matches"""
+        if not origin:
+            return False
+        
+        # Check exact matches
+        if origin in self.exact_origins:
+            return True
+        
+        # Check wildcard matches (e.g., .onrender.com matches anything.onrender.com)
+        for wildcard in self.wildcard_origins:
+            if wildcard == ".onrender.com" and origin.endswith(".onrender.com"):
+                return True
+            # Handle other wildcard patterns
+            if wildcard.startswith(".") and origin.endswith(wildcard):
+                return True
+        
+        return False
+    
+    async def dispatch(self, request: Request, call_next):
+        origin = request.headers.get("origin")
+        
+        # Check if origin is allowed
+        if self.is_origin_allowed(origin):
+            response = await call_next(request)
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            return response
+        
+        # Also check if exact origin is in allowed_origins directly
+        if origin in self.allowed_origins:
+            response = await call_next(request)
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+            return response
+        
+        return await call_next(request)
+
 
 # Load environment variables
 load_dotenv()
@@ -59,19 +115,37 @@ app = FastAPI(
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
 # Also allow the backend URL for API calls from the frontend
 additional_origins = os.environ.get("ADDITIONAL_ORIGINS", "")
-if additional_origins:
-    origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")] + [origin.strip() for origin in additional_origins.split(",")]
-else:
-    origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "Authorization"],
-)
+# Parse origins - handle .onrender.com specially for preview deployments
+def parse_origins(origins_str):
+    """Parse comma-separated origins and handle .onrender.com wildcard"""
+    origins = []
+    for origin in origins_str.split(","):
+        origin = origin.strip()
+        if not origin:
+            continue
+        # Handle .onrender.com wildcard for preview deployments
+        if origin == ".onrender.com":
+            # Add common Render preview URL patterns
+            # Note: These are placeholders - actual preview URLs follow pattern:
+            # https://<service>-<branch>-<hash>.onrender.com
+            # We'll add a simple check in the request handler instead
+            origins.append(".onrender.com")
+        elif origin.startswith("https://") or origin.startswith("http://"):
+            origins.append(origin)
+        else:
+            origins.append(f"https://{origin}")
+    return origins
+
+all_origins = parse_origins(ALLOWED_ORIGINS)
+if additional_origins:
+    all_origins.extend(parse_origins(additional_origins))
+
+# Remove duplicates
+origins = list(set(all_origins))
+
+# Add custom CORS middleware first to handle wildcards
+app.add_middleware(DynamicCORSMiddleware, allowed_origins=origins)
 
 # Add GZip middleware for compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)

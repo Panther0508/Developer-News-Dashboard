@@ -99,17 +99,42 @@ The following security measures are in place:
 
 ## Troubleshooting
 
-### AI features not working
+### News data not loading in production
 
-- Ensure `HF_TOKEN` is set in environment variables
-- Get a token from [HuggingFace Settings](https://huggingface.co/settings/tokens)
+If the frontend displays but news data doesn't load:
+
+1. **Check CORS Configuration**:
+   - Verify `ALLOWED_ORIGINS` in backend includes your frontend's domain
+   - The backend now supports `.onrender.com` wildcard for preview deployments
+   - Check browser console for CORS errors
+
+2. **Verify API Base URL**:
+   - Ensure `VITE_API_BASE_URL` is set correctly in frontend environment
+   - Should point to your backend service URL (e.g., `https://devpulse-backend.onrender.com`)
+
+3. **Check Backend Health**:
+   - Visit `/api/health` endpoint on your backend
+   - Should return `{"status":"healthy",...}`
+
+4. **Cold Start Issues**:
+   - Free tier services may spin down after inactivity
+   - First request after idle may be slow or fail
+   - Wait 30-60 seconds and retry
 
 ### CORS errors
 
 - Check that `ALLOWED_ORIGINS` includes your frontend URL
 - Format: comma-separated list (no spaces)
+- Use `.onrender.com` for preview deployments
 
 ### Slow responses
 
 - The first request may be slow due to cold start
 - Subsequent requests benefit from caching
+
+### Backend returns 500 error
+
+1. Check backend logs in Render dashboard
+2. Verify external API calls aren't blocked
+3. Ensure `HF_TOKEN` is set for AI features (optional)
+4. Check if third-party APIs (HN, Dev.to, Reddit) are accessible from Render
