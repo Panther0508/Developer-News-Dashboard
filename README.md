@@ -18,7 +18,7 @@
 
 ## 🚀 Live Demo
 
-**Visit the live application:** [https://devpulse-frontend.onrender.com](https://devpulse-frontend.onrender.com)
+**Visit the live application:** [https://developer-news-dashboard.onrender.com](https://developer-news-dashboard.onrender.com)
 
 ---
 
@@ -93,14 +93,14 @@ The AI News Assistant is a powerful feature that helps developers stay informed 
 - **HTTPX** - Async HTTP client
 - **CORS** - Cross-origin support
 - **In-memory caching** - 15-minute cache
-- **AI Integration** - OpenAI-powered assistance
+- **AI Integration** - HuggingFace-powered assistance
 
 ### APIs Used
 
 - Hacker News API (Algolia)
 - Dev.to API
 - GitHub API
-- OpenAI API (for AI Assistant)
+- HuggingFace Inference API (for AI Assistant)
 
 ---
 
@@ -131,7 +131,6 @@ Developer-News-Dashboard/
 │   ├── vite.config.js
 │   ├── tailwind.config.js
 │   └── Dockerfile
-├── docker-compose.yml       # Docker orchestration
 ├── render.yaml             # Render deployment config
 ├── DEPLOY.md               # Deployment guide
 ├── LICENSE
@@ -145,7 +144,7 @@ Developer-News-Dashboard/
 ### Prerequisites
 
 - Node.js 18+
-- Python 3.8+
+- Python 3.11+
 - npm or yarn
 
 ### Clone the Repository
@@ -181,7 +180,6 @@ The backend will start at `http://localhost:8000`
 cd Developer-News-Dashboard
 
 # Install dependencies
-cd frontend
 npm install
 
 # Start development server
@@ -190,13 +188,6 @@ npm run dev
 
 The frontend will start at `http://localhost:5173`
 
-### Using Docker
-
-```bash
-# Start both frontend and backend with Docker Compose
-docker-compose up --build
-```
-
 ---
 
 ## 📝 Usage
@@ -204,34 +195,42 @@ docker-compose up --build
 ### Development Mode
 
 1. Start the backend: `cd backend && python main.py`
-2. Start the frontend: `cd frontend && npm run dev`
+2. Start the frontend: `npm run dev`
 3. Open http://localhost:5173 in your browser
 
 ### Environment Variables
 
-Create a `.env` file in the backend directory:
+For AI features, create a `.env` file in the backend directory:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+HF_TOKEN=your_huggingface_token_here
 ```
 
-The frontend expects the API to be available at `http://localhost:8000`
+The frontend expects the API to be available at `http://localhost:8000` (development) or your deployed backend URL (production).
 
 ---
 
-## 🔧 Configuration
+## ☁️ Deployment
 
-### Backend
+### Deploy to Render
 
-The backend uses in-memory caching with a 15-minute duration. To modify, edit `CACHE_DURATION` in `backend/main.py`.
+See [DEPLOY.md](DEPLOY.md) for detailed deployment instructions.
 
-### Frontend
+#### Quick Setup
 
-TailwindCSS is configured with custom colors in `tailwind.config.js`:
+1. **Backend Service** (Python/FastAPI)
+   - Build Command: `cd backend && pip install -r requirements.txt`
+   - Start Command: `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - Environment: Python 3.11
+   - Environment Variables:
+     - `ALLOWED_ORIGINS`: Your frontend URL
 
-- Primary: `#D4AF37` (Gold)
-- Background: `#000000` (Black)
-- Cards: `#111111`
+2. **Frontend Service** (Static)
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npx serve -s dist -l $PORT`
+   - Environment: Node 18
+   - Environment Variables:
+     - `VITE_API_BASE_URL`: Your backend URL
 
 ---
 
@@ -245,17 +244,17 @@ The main dashboard displays aggregated news from Hacker News and Dev.to with a s
 ### AI News Assistant
 
 ![AI Chat](docs/Screenshot%202026-03-15%20094644.png)
-The AI News Assistant provides intelligent assistance with features like summarizing articles, analyzing topics, comparing articles, and generating personalized briefings. Quick actions include Summarize Article, Analyze Topic, Compare Articles, Explain Topic, Daily Briefing, and What's Trending.
+The AI News Assistant provides intelligent assistance with features like summarizing articles, analyzing topics, comparing articles, and generating personalized briefings.
 
 ### Tech Trends
 
 ![Tech Trends](docs/Screenshot%202026-03-15%20094717.png)
-Visual representation of popular programming languages using interactive charts. Shows trends for Python, JavaScript, Go, Rust, TypeScript, and other popular languages over time.
+Visual representation of popular programming languages using interactive charts.
 
 ### GitHub Trending & Tools
 
 ![GitHub Trending](docs/Screenshot%202026-03-15%20094740.png)
-Browse latest trending repositories from GitHub with detailed information including stars, forks, language, description, and topics. Also shows curated developer tools.
+Browse latest trending repositories from GitHub with detailed information.
 
 ---
 
@@ -286,7 +285,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [GitHub API](https://api.github.com)
 - [TailwindCSS](https://tailwindcss.com)
 - [Framer Motion](https://www.framer.com/motion/)
-- [OpenAI](https://openai.com/)
+- [HuggingFace](https://huggingface.co/)
 
 ---
 

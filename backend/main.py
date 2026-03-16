@@ -12,9 +12,6 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import Response
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
 from pydantic import BaseModel, Field, field_validator
 
 from services.news_service import get_aggregated_news
@@ -29,61 +26,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-class DynamicCORSMiddleware(BaseHTTPMiddleware):
-    """Custom CORS middleware that handles wildcard domains for preview deployments"""
-    
-    def __init__(self, app, allowed_origins: list):
-        super().__init__(app)
-        self.allowed_origins = allowed_origins
-        self.wildcard_origins = [o for o in allowed_origins if o.startswith(".")]
-        self.exact_origins = [o for o in allowed_origins if not o.startswith(".")]
-    
-    def is_origin_allowed(self, origin: str) -> bool:
-        """Check if origin is allowed, including wildcard matches"""
-        if not origin:
-            return False
-        
-        # Check exact matches
-        if origin in self.exact_origins:
-            return True
-        
-        # Check wildcard matches (e.g., .onrender.com matches anything.onrender.com)
-        for wildcard in self.wildcard_origins:
-            if wildcard == ".onrender.com" and origin.endswith(".onrender.com"):
-                return True
-            # Handle other wildcard patterns
-            if wildcard.startswith(".") and origin.endswith(wildcard):
-                return True
-        
-        return False
-    
-    async def dispatch(self, request: Request, call_next):
-        origin = request.headers.get("origin")
-        
-        # Check if origin is allowed
-        if self.is_origin_allowed(origin):
-            response = await call_next(request)
-            response.headers["Access-Control-Allow-Origin"] = origin
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-            return response
-        
-        # Also check if exact origin is in allowed_origins directly
-        if origin in self.allowed_origins:
-            response = await call_next(request)
-            response.headers["Access-Control-Allow-Origin"] = origin
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-            response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-            return response
-        
-        return await call_next(request)
-
-
 # Load environment variables
 load_dotenv()
+
 
 class SummaryRequest(BaseModel):
     """Request model for text summarization"""
@@ -98,11 +43,13 @@ class SummaryRequest(BaseModel):
             raise ValueError('Text must be at least 50 characters long')
         return v
 
+
 class ChatRequest(BaseModel):
     """Request model for AI chat"""
     message: str = Field(..., min_length=1, max_length=2000, description="User message")
     context: Optional[str] = Field("", max_length=5000, description="Additional context")
     conversation_history: Optional[List[dict]] = Field(default_factory=list, max_length=50)
+
 
 app = FastAPI(
     title="DevPulse API",
@@ -111,46 +58,50 @@ app = FastAPI(
 )
 
 
-# Configure CORS from environment variable with fallback
-ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
-# Also allow the backend URL for API calls from the frontend
-additional_origins = os.environ.get("ADDITIONAL_ORIGINS", "")
-
-# Parse origins - handle .onrender.com specially for preview deployments
-def parse_origins(origins_str):
-    """Parse comma-separated origins and handle .onrender.com wildcard"""
+# Configure CORS from environment variable
+def get_allowed_origins():
+    """Get allowed origins from environment variable"""
+    env_origins = os.environ.get("ALLOWED_ORIGINS", "")
+    
+    if not env_origins:
+        # Default to localhost for development
+        return ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"]
+    
+    # Parse comma-separated origins
     origins = []
-    for origin in origins_str.split(","):
+    for origin in env_origins.split(","):
         origin = origin.strip()
         if not origin:
             continue
-        # Handle .onrender.com wildcard for preview deployments
+        # Handle .onrender.com wildcard - add as-is for FastAPI to handle
         if origin == ".onrender.com":
-            # Add common Render preview URL patterns
-            # Note: These are placeholders - actual preview URLs follow pattern:
-            # https://<service>-<branch>-<hash>.onrender.com
-            # We'll add a simple check in the request handler instead
             origins.append(".onrender.com")
-        elif origin.startswith("https://") or origin.startswith("http://"):
+        elif origin.startswith("http://") or origin.startswith("https://"):
             origins.append(origin)
         else:
             origins.append(f"https://{origin}")
+    
     return origins
 
-all_origins = parse_origins(ALLOWED_ORIGINS)
-if additional_origins:
-    all_origins.extend(parse_origins(additional_origins))
 
-# Remove duplicates
-origins = list(set(all_origins))
+# Get origins
+origins = get_allowed_origins()
 
-# Add custom CORS middleware first to handle wildcards
-app.add_middleware(DynamicCORSMiddleware, allowed_origins=origins)
+print(f"CORS origins: {origins}")
+logger.info(f"CORS enabled for origins: {origins}")
+
+# Add CORS middleware using FastAPI's built-in
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Add GZip middleware for compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-logger.info(f"CORS enabled for origins: {origins}")
 
 # Simple in-memory cache with TTL
 cache = {}
@@ -247,13 +198,14 @@ async def get_trending(
     cache_key = f"github_{language}_{limit}"
     cached = get_cached(cache_key)
     if cached is not None:
-        logger.info(f"Returning cached GitHub trending data")
+        logger.info("Returning cached GitHub trending data")
         return {"repositories": cached, "cached": True}
     
     try:
         repos = await fetch_github_trending(language, limit)
         # Ensure we always have data
         if not repos:
+            from services.github_service import get_mock_github_repos
             repos = get_mock_github_repos()
         set_cache(cache_key, repos)
         logger.info(f"Fetched {len(repos)} trending repos for language: {language}")
@@ -261,6 +213,7 @@ async def get_trending(
     except Exception as e:
         logger.error(f"Error fetching GitHub trending: {str(e)}")
         # Always return mock data on error
+        from services.github_service import get_mock_github_repos
         return {"repositories": get_mock_github_repos(), "cached": False}
 
 
@@ -272,7 +225,7 @@ async def get_tools():
         return {"tools": tools}
     except Exception as e:
         logger.error(f"Error fetching dev tools: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch dev tools")
+        return {"tools": []}
 
 
 @app.get("/api/analytics")
@@ -335,7 +288,7 @@ async def get_analytics():
         
     except Exception as e:
         logger.error(f"Error fetching analytics: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch analytics")
+        return {"widgets": []}
 
 
 @app.get("/api/tech-trends")
@@ -402,7 +355,7 @@ async def search(q: str = Query(..., min_length=1, max_length=200, description="
         }
     except Exception as e:
         logger.error(f"Error searching news: {str(e)}")
-        raise HTTPException(status_code=500, detail="Search failed")
+        return {"results": [], "count": 0, "query": q}
 
 
 @app.post("/api/summarize")
