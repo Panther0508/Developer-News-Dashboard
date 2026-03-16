@@ -9,7 +9,7 @@ services:
       - key: PYTHON_VERSION
         value: "3.11"
       - key: ALLOWED_ORIGINS
-        value: "https://devpulse.onrender.com"
+        value: "https://devpulse.onrender.com,https://devpulse-frontend.onrender.com"
       - key: ADDITIONAL_ORIGINS
         value: "https://devpulse-backend.onrender.com"
       - key: HF_TOKEN

@@ -1,7 +1,11 @@
 import axios from 'axios'
 
-// Use proxy in development, direct URL in production
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
+// Use environment variable for production, fallback to production URL
+// In development, use empty string (proxied via vite.config.js)
+// In production, use the backend URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://devpulse-backend.onrender.com'
+
+console.log('API Base URL:', API_BASE_URL)
 
 
 const api = axios.create({

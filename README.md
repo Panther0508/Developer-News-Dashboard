@@ -18,7 +18,7 @@
 
 ## 🚀 Live Demo
 
-**Visit the live application:** [https://Developer-News-Dashboard.onrender.com](https://Developer-News-Dashboard.onrender.com)
+**Visit the live application:** [https://devpulse-frontend.onrender.com](https://devpulse-frontend.onrender.com)
 
 ---
 
