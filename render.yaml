@@ -8,12 +8,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
-      # CORS: Allow all possible production domains (including preview deployments)
-      # Using wildcard approach - the backend will parse this and allow all .onrender.com domains
+      # CORS: Allow all onrender.com domains (including preview deployments)
       - key: ALLOWED_ORIGINS
-        value: "https://devpulse.onrender.com,https://devpulse-frontend.onrender.com,https://devpulse-backend.onrender.com,.onrender.com"
-      - key: ADDITIONAL_ORIGINS
-        value: ""
+        value: ".onrender.com"
       - key: HF_TOKEN
         sync: false
         description: "HuggingFace API token for AI features (optional)"
@@ -29,6 +26,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "18"
+      # The API base URL should point to your deployed backend
+      # Update this to your actual backend URL after deployment
       - key: VITE_API_BASE_URL
         value: "https://devpulse-backend.onrender.com"
     autoDeploy: true

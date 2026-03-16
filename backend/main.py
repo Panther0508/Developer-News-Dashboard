@@ -213,17 +213,24 @@ async def get_news(
     """
     cache_key = f"news_{category}_{limit}"
     cached = get_cached(cache_key)
-    if cached:
+    if cached is not None:
+        logger.info("Returning cached news data")
         return {"news": cached, "cached": True}
     
     try:
         news = await get_aggregated_news(category, limit)
+        # Ensure we always have data
+        if not news:
+            from services.news_service import get_mock_news
+            news = get_mock_news(category)
         set_cache(cache_key, news)
         logger.info(f"Fetched {len(news)} news items for category: {category}")
         return {"news": news, "cached": False}
     except Exception as e:
         logger.error(f"Error fetching news: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch news")
+        # Always return mock data on error
+        from services.news_service import get_mock_news
+        return {"news": get_mock_news(category), "cached": False}
 
 
 @app.get("/api/github-trending")
@@ -239,17 +246,22 @@ async def get_trending(
     """
     cache_key = f"github_{language}_{limit}"
     cached = get_cached(cache_key)
-    if cached:
+    if cached is not None:
+        logger.info(f"Returning cached GitHub trending data")
         return {"repositories": cached, "cached": True}
     
     try:
         repos = await fetch_github_trending(language, limit)
+        # Ensure we always have data
+        if not repos:
+            repos = get_mock_github_repos()
         set_cache(cache_key, repos)
         logger.info(f"Fetched {len(repos)} trending repos for language: {language}")
         return {"repositories": repos, "cached": False}
     except Exception as e:
         logger.error(f"Error fetching GitHub trending: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch GitHub trending")
+        # Always return mock data on error
+        return {"repositories": get_mock_github_repos(), "cached": False}
 
 
 @app.get("/api/dev-tools")

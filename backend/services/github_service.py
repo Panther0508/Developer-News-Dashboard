@@ -20,7 +20,7 @@ async def fetch_github_trending(language: Optional[str] = None, limit: int = 15)
         List of trending repositories
     """
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        async with httpx.AsyncClient(timeout=15.0) as client:
             # For trending, we'll look at repos created in the last 7 days with most stars
             last_week = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
             query = f"created:>{last_week}"
@@ -30,8 +30,17 @@ async def fetch_github_trending(language: Optional[str] = None, limit: int = 15)
             response = await client.get(
                 "https://api.github.com/search/repositories",
                 params={"q": query, "sort": "stars", "order": "desc", "per_page": limit},
-                headers={"Accept": "application/vnd.github.v3+json"}
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "User-Agent": "DevPulse/1.0"
+                }
             )
+            
+            # Check rate limiting
+            if response.status_code == 403:
+                logger.warning("GitHub API rate limit exceeded, using mock data")
+                return get_mock_github_repos()
+            
             response.raise_for_status()
             data = response.json()
             
@@ -47,19 +56,23 @@ async def fetch_github_trending(language: Optional[str] = None, limit: int = 15)
                     "language": item.get("language", "Unknown"),
                     "stars_today": random.randint(50, 500) # Simulated daily stars
                 })
-
+            
+            # If no repos found, return mock data
+            if not repos:
+                logger.warning("No GitHub repos returned, using mock data")
+                return get_mock_github_repos()
             
             logger.info(f"Fetched {len(repos)} trending GitHub repos (language: {language})")
             return repos
             
     except httpx.TimeoutException:
-        logger.warning(f"Timeout fetching GitHub trending for language: {language}")
+        logger.warning(f"Timeout fetching GitHub trending for language: {language}, using mock data")
         return get_mock_github_repos()
     except httpx.HTTPStatusError as e:
-        logger.error(f"HTTP error fetching GitHub: {e.response.status_code}")
+        logger.error(f"HTTP error fetching GitHub: {e.response.status_code}, using mock data")
         return get_mock_github_repos()
     except Exception as e:
-        logger.error(f"Error fetching GitHub trending: {str(e)}")
+        logger.error(f"Error fetching GitHub trending: {str(e)}, using mock data")
         return get_mock_github_repos()
 
 
@@ -93,7 +106,7 @@ def get_mock_github_repos():
             "description": "The React Framework for the Web",
             "repo_url": "https://github.com/vercel/next.js",
             "stars": 115000,
-            "TypeScript": "TypeScript",
+            "language": "TypeScript",
             "stars_today": 180
         },
         {
