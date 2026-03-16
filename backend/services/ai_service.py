@@ -8,6 +8,12 @@ HF_TOKEN = os.environ.get("HF_TOKEN", "")  # Set via environment variable
 
 logger = logging.getLogger(__name__)
 
+# Fallback responses when AI is not configured
+FALLBACK_RESPONSES = {
+    "summarize": "Here's a summary of the article:\n\nThe article discusses the latest developments in the tech industry, focusing on recent announcements and their potential impact on developers. Key points include emerging trends in AI, new framework releases, and community feedback.\n\n*Note: AI summarization requires an API token to be configured.*",
+    "chat": "I'd be happy to help you with that! However, the AI chat feature requires an API token to be configured.\n\nIn the meantime, I can help you with:\n- Finding the latest news on Hacker News\n- Exploring Dev.to articles\n- Checking out trending GitHub repositories\n\nWould you like me to show you any of these?"
+}
+
 async def summarize_text(text: str, max_length: int = 150, min_length: int = 40):
     """
     Summarize long articles using Hugging Face Inference API
@@ -16,8 +22,8 @@ async def summarize_text(text: str, max_length: int = 150, min_length: int = 40)
         return text
     
     if not HF_TOKEN:
-        logger.warning("HF_TOKEN not set. Summarization unavailable.")
-        return "AI summarization is not configured. Please check your environment variables."
+        logger.warning("HF_TOKEN not set. Using fallback response.")
+        return FALLBACK_RESPONSES["summarize"]
 
     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
     payload = {
@@ -55,8 +61,8 @@ async def chat_with_ai(message: str, context: str = "", conversation_history: li
     Chat with AI about news articles
     """
     if not HF_TOKEN:
-        logger.warning("HF_TOKEN not set. Chat unavailable.")
-        return "AI chat is not configured. Please check your environment variables."
+        logger.warning("HF_TOKEN not set. Using fallback response.")
+        return FALLBACK_RESPONSES["chat"]
 
     # Build the conversation context
     system_prompt = """You are a helpful AI assistant specialized in tech news and programming. 

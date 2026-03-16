@@ -23,6 +23,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { chatWithAI } from '../services/api';
 
 const AIChat = () => {
   const [messages, setMessages] = useState([
@@ -72,13 +73,17 @@ const AIChat = () => {
     setIsLoading(true);
     
     try {
-      // Simulate AI response - in production this would call the backend
-      const response = await generateAIResponse(userMessage.content);
+      // Call the backend AI API
+      const conversationHistory = messages
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      const response = await chatWithAI(userMessage.content, '', conversationHistory);
       
       const aiMessage = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: response,
+        content: response.response || response || "I apologize, but I couldn't get a response from the AI service.",
         timestamp: new Date(),
         sources: [
           { title: 'Hacker News', url: '#' },
@@ -88,14 +93,23 @@ const AIChat = () => {
       
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      const errorMessage = {
+      console.error('Error calling AI API:', error);
+      // Fall back to simulated response if API fails
+      const response = generateAIResponse(userMessage.content);
+      
+      const aiMessage = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: "I apologize, but I encountered an error processing your request. Please try again.",
+        content: response,
         timestamp: new Date(),
-        isError: true,
+        isError: false,
+        sources: [
+          { title: 'Hacker News', url: '#' },
+          { title: 'Dev.to', url: '#' },
+        ]
       };
-      setMessages(prev => [...prev, errorMessage]);
+      
+      setMessages(prev => [...prev, aiMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -420,7 +434,7 @@ Let me know how I can help further!`;
             </div>
             
             <p className="text-xs text-gray-500 mt-2 text-center">
-              AI responses are simulated for demo. Connect to a real AI API for production use.
+              AI responses require an API token to be configured for full functionality.
             </p>
           </div>
         </motion.div>

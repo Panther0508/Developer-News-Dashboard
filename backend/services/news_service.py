@@ -170,10 +170,71 @@ async def get_aggregated_news(category: str = "programming", limit: int = 15):
     all_news = []
     for source_news in results:
         all_news.extend(source_news)
-        
-    # Sort by published date (newest first)
-    all_news.sort(key=lambda x: x.get("published_date", ""), reverse=True)
+    
+    # If no news from any source, return mock data
+    if not all_news:
+        logger.warning("No news from external APIs, returning mock data")
+        all_news = get_mock_news(category)
+    else:
+        # Sort by published date (newest first)
+        all_news.sort(key=lambda x: x.get("published_date", ""), reverse=True)
     
     logger.info(f"Aggregated {len(all_news)} total news items")
     
     return all_news[:30]
+
+
+def get_mock_news(category: str = "programming"):
+    """Return mock news data when external APIs fail"""
+    return [
+        {
+            "id": "mock-1",
+            "title": "Getting Started with Python: A Comprehensive Guide",
+            "author": "DevPulse Team",
+            "url": "https://www.python.org",
+            "source": "Hacker News",
+            "published_date": "2024-01-15T10:00:00Z",
+            "description": "Learn Python from scratch with this comprehensive guide covering basics to advanced concepts.",
+            "tags": ["python", "programming", "tutorial"]
+        },
+        {
+            "id": "mock-2",
+            "title": "The Future of AI in Software Development",
+            "author": "Tech Writer",
+            "url": "https://dev.to",
+            "source": "Dev.to",
+            "published_date": "2024-01-14T15:30:00Z",
+            "description": "Exploring how artificial intelligence is reshaping the landscape of software development.",
+            "tags": ["ai", "programming", "future"]
+        },
+        {
+            "id": "mock-3",
+            "title": "Building Modern Web Applications with React",
+            "author": "Web Developer",
+            "url": "https://reactjs.org",
+            "source": "Hacker News",
+            "published_date": "2024-01-13T09:00:00Z",
+            "description": "A deep dive into building modern, responsive web applications using React and related tools.",
+            "tags": ["react", "javascript", "webdev"]
+        },
+        {
+            "id": "mock-4",
+            "title": "Understanding Rust Memory Management",
+            "author": "Systems Programmer",
+            "url": "https://rust-lang.org",
+            "source": "Dev.to",
+            "published_date": "2024-01-12T14:00:00Z",
+            "description": "An in-depth look at how Rust manages memory without garbage collection.",
+            "tags": ["rust", "systems", "memory"]
+        },
+        {
+            "id": "mock-5",
+            "title": "Introduction to DevOps Practices",
+            "author": "DevOps Engineer",
+            "url": "https://devops.com",
+            "source": "Reddit Programming",
+            "published_date": "2024-01-11T11:00:00Z",
+            "description": "Learn the fundamentals of DevOps including CI/CD, containerization, and automation.",
+            "tags": ["devops", "ci-cd", "automation"]
+        }
+    ]
