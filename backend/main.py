@@ -57,7 +57,12 @@ app = FastAPI(
 
 # Configure CORS from environment variable with fallback
 ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
-origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
+# Also allow the backend URL for API calls from the frontend
+additional_origins = os.environ.get("ADDITIONAL_ORIGINS", "")
+if additional_origins:
+    origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")] + [origin.strip() for origin in additional_origins.split(",")]
+else:
+    origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(",")]
 
 # Add CORS middleware
 app.add_middleware(

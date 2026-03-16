@@ -276,10 +276,11 @@ Let me know how I can help further!`;
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-[#111111] border border-[#333333] rounded-2xl overflow-hidden"
+          className="bg-[#111111] border border-[#333333] rounded-2xl overflow-hidden flex flex-col"
+          style={{ height: '600px' }}
         >
           {/* Messages */}
-          <div className="h-[500px] overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
             <AnimatePresence>
               {messages.map((message) => (
                 <motion.div

@@ -10,6 +10,8 @@ services:
         value: "3.11"
       - key: ALLOWED_ORIGINS
         value: "https://devpulse.onrender.com"
+      - key: ADDITIONAL_ORIGINS
+        value: "https://devpulse-backend.onrender.com"
       - key: HF_TOKEN
         sync: false
         description: "HuggingFace API token for AI features (optional)"
